@@ -20,19 +20,19 @@ import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpGet;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
+import com.koushikdutta.async.http.BasicNameValuePair;
+import com.koushikdutta.async.http.NameValuePair;
 import com.koushikdutta.async.http.body.UrlEncodedFormBody;
 import com.koushikdutta.async.http.cache.ResponseCacheMiddleware;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
-    static ResponseCacheMiddleware cacher;
-    
+	private static final String LOGTAG = "AsyncSample";
+	static ResponseCacheMiddleware cacher;
     ImageView rommanager;
     ImageView tether;
     ImageView desksms;
@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
             }
         }
         setContentView(R.layout.activity_main);
-        
+
         Button b = (Button)findViewById(R.id.go);
         b.setOnClickListener(new OnClickListener() {
             @Override
@@ -61,16 +61,16 @@ public class MainActivity extends Activity {
                 refresh();
             }
         });
-        
+
         rommanager = (ImageView)findViewById(R.id.rommanager);
         tether = (ImageView)findViewById(R.id.tether);
         desksms = (ImageView)findViewById(R.id.desksms);
         chart = (ImageView)findViewById(R.id.chart);
-        
+
         showCacheToast();
     }
 
-    void showCacheToast() {
+	void showCacheToast() {
         boolean caching = cacher.getCaching();
         Toast.makeText(getApplicationContext(), "Caching: " + caching, Toast.LENGTH_SHORT).show();
     }
@@ -87,8 +87,8 @@ public class MainActivity extends Activity {
         });
         return true;
     }
-    
-    private void assignImageView(final ImageView iv, final BitmapDrawable bd) {
+
+	private void assignImageView(final ImageView iv, final BitmapDrawable bd) {
         iv.getHandler().post(new Runnable() {
           @Override
           public void run() {
@@ -115,11 +115,11 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void getChartFile() {
+	private void getChartFile() {
         final ImageView iv = chart;
         final String filename = getFileStreamPath(randomFile()).getAbsolutePath();
-        ArrayList<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        pairs.add(new BasicNameValuePair("cht", "lc"));
+		List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+		pairs.add(new BasicNameValuePair("cht", "lc"));
         pairs.add(new BasicNameValuePair("chtt", "This is a google chart"));
         pairs.add(new BasicNameValuePair("chs", "512x512"));
         pairs.add(new BasicNameValuePair("chxt", "x"));
@@ -158,17 +158,15 @@ public class MainActivity extends Activity {
         tether.setImageBitmap(null);
         desksms.setImageBitmap(null);
         chart.setImageBitmap(null);
-        
-        getFile(rommanager, "https://raw.github.com/koush/AndroidAsync/master/rommanager.png", getFileStreamPath(randomFile()).getAbsolutePath());
+
+		getFile(rommanager, "https://raw.github.com/koush/AndroidAsync/master/rommanager.png", getFileStreamPath(randomFile()).getAbsolutePath());
         getFile(tether, "https://raw.github.com/koush/AndroidAsync/master/tether.png", getFileStreamPath(randomFile()).getAbsolutePath());
         getFile(desksms, "https://raw.github.com/koush/AndroidAsync/master/desksms.png", getFileStreamPath(randomFile()).getAbsolutePath());
         getChartFile();
-        
-        Log.i(LOGTAG, "cache hit: " + cacher.getCacheHitCount());
+
+		Log.i(LOGTAG, "cache hit: " + cacher.getCacheHitCount());
         Log.i(LOGTAG, "cache store: " + cacher.getCacheStoreCount());
         Log.i(LOGTAG, "conditional cache hit: " + cacher.getConditionalCacheHitCount());
         Log.i(LOGTAG, "network: " + cacher.getNetworkCount());
     }
-    
-    private static final String LOGTAG = "AsyncSample";
 }

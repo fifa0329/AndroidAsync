@@ -1,10 +1,8 @@
 package com.koushikdutta.async.sample.middleware;
 
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.AsyncHttpClientMiddleware;
 import com.koushikdutta.async.http.SimpleMiddleware;
 
 import java.util.Hashtable;
@@ -13,12 +11,14 @@ import java.util.Hashtable;
  * Created by koush on 2/15/15.
  */
 public class CacheOverrideMiddleware extends SimpleMiddleware {
+	Hashtable<String, String> cacheHeaders = new Hashtable<String, String>();
+
     // insert this using
     public static CacheOverrideMiddleware add(AsyncHttpClient client) {
         CacheOverrideMiddleware ret = new CacheOverrideMiddleware();
         // add this first so it gets called before everything else
-        client.getMiddleware().add(0, ret);
-        return ret;
+		client.getMiddleware().add(ret);
+		return ret;
     }
 
     @Override
@@ -30,8 +30,6 @@ public class CacheOverrideMiddleware extends SimpleMiddleware {
         if (!TextUtils.isEmpty(cache))
             data.response.headers().set("Cache-Control", cache);
     }
-
-    Hashtable<String, String> cacheHeaders = new Hashtable<String, String>();
 
     /**
      * Override cache-control directives
